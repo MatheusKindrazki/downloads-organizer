@@ -2,11 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Identificador único do LaunchAgent -->
+    <!-- Unique LaunchAgent identifier -->
     <key>Label</key>
     <string>com.user.downloads-organizer</string>
 
-    <!-- Comando a ser executado -->
+    <!-- Command to execute -->
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
@@ -14,21 +14,21 @@
         <string>$HOME/.downloads-organizer/organize-downloads.sh --verbose 2>&1 | tee -a $HOME/.downloads-organizer/launchd.log</string>
     </array>
 
-    <!-- Agendar para todo Domingo às 10:00 -->
+    <!-- Schedule for every Sunday at 10:00 AM -->
     <key>StartCalendarInterval</key>
     <dict>
-        <!-- 0 = Domingo, 1 = Segunda, ..., 6 = Sábado -->
+        <!-- 0 = Sunday, 1 = Monday, ..., 6 = Saturday -->
         <key>Weekday</key>
         <integer>0</integer>
-        <!-- Hora (0-23) -->
+        <!-- Hour (0-23) -->
         <key>Hour</key>
         <integer>10</integer>
-        <!-- Minuto (0-59) -->
+        <!-- Minute (0-59) -->
         <key>Minute</key>
         <integer>0</integer>
     </dict>
 
-    <!-- Variáveis de ambiente -->
+    <!-- Environment variables -->
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
@@ -37,33 +37,33 @@
         <string>$HOME</string>
     </dict>
 
-    <!-- Diretório de trabalho -->
+    <!-- Working directory -->
     <key>WorkingDirectory</key>
     <string>$HOME/.downloads-organizer</string>
 
-    <!-- Logs de saída e erro -->
+    <!-- Output and error logs -->
     <key>StandardOutPath</key>
     <string>$HOME/.downloads-organizer/stdout.log</string>
     <key>StandardErrorPath</key>
     <string>$HOME/.downloads-organizer/stderr.log</string>
 
-    <!-- Executar ao carregar (para teste inicial) -->
+    <!-- Run on load (for initial test) -->
     <key>RunAtLoad</key>
     <false/>
 
-    <!-- Continuar tentando se falhar -->
+    <!-- Keep trying if it fails -->
     <key>KeepAlive</key>
     <false/>
 
-    <!-- Timeout em segundos (15 minutos) -->
+    <!-- Timeout in seconds (15 minutes) -->
     <key>TimeOut</key>
     <integer>900</integer>
 
-    <!-- Prioridade baixa para não atrapalhar -->
+    <!-- Low priority to not interfere -->
     <key>Nice</key>
     <integer>10</integer>
 
-    <!-- Esperar rede estar disponível (para Claude API) -->
+    <!-- Wait for network to be available (for Claude API) -->
     <key>WatchPaths</key>
     <array/>
 

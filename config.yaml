@@ -1,30 +1,30 @@
-# Downloads Organizer - Configuração
-# Edite este arquivo para personalizar o comportamento
+# Smart Downloads Organizer - Configuration
+# Edit this file to customize behavior
 
-# Diretórios de destino
+# Destination directories
 directories:
   downloads: ~/Downloads
   documents: ~/Documents
   icloud: ~/Library/Mobile Documents/com~apple~CloudDocs
-  archive: ~/Documents/_Arquivo
+  archive: ~/Documents/_Archive
 
-  # Categorias (subpastas de Documents)
-  images: ~/Documents/Imagens
+  # Categories (subfolders of Documents)
+  images: ~/Documents/Images
   pdfs: ~/Documents/PDFs
-  code: ~/Documents/Código
-  videos: ~/Documents/Vídeos
-  audio: ~/Documents/Áudio
-  installers: ~/Documents/Instaladores
+  code: ~/Documents/Code
+  videos: ~/Documents/Videos
+  audio: ~/Documents/Audio
+  installers: ~/Documents/Installers
 
-# Regras automáticas (aplicadas ANTES da análise com IA)
-# Estas regras aceleram o processamento para casos óbvios
+# Automatic rules (applied BEFORE AI analysis)
+# These rules speed up processing for obvious cases
 auto_rules:
-  # Arquivos que sempre vão para o lixo
+  # Files that always go to trash
   trash:
     extensions: [".tmp", ".part", ".crdownload", ".download", ".incomplete"]
     patterns: ["*.tmp.*", "~*", "._*"]
 
-  # Arquivos que sempre vão para categorias específicas
+  # Files that always go to specific categories
   images:
     extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".svg", ".ico"]
 
@@ -33,7 +33,7 @@ auto_rules:
 
   code:
     extensions: [".py", ".js", ".ts", ".go", ".rs", ".java", ".cpp", ".c", ".h", ".sh", ".bash", ".zsh"]
-    patterns: ["*.tar.gz", "*.zip"] # Apenas se contiver "project", "code", "src" no nome
+    patterns: ["*.tar.gz", "*.zip"] # Only if contains "project", "code", "src" in name
 
   videos:
     extensions: [".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"]
@@ -44,36 +44,36 @@ auto_rules:
   installers:
     extensions: [".dmg", ".pkg", ".app", ".exe", ".msi"]
 
-# Regras baseadas em idade do arquivo (em dias)
+# Rules based on file age (in days)
 age_rules:
-  # Instaladores antigos vão para o lixo
+  # Old installers go to trash
   - condition: "extension in ['.dmg', '.pkg'] and age > 14"
     action: trash
-    reason: "Instalador antigo, provavelmente já foi usado"
+    reason: "Old installer, probably already used"
 
-  # Screenshots muito antigos vão para arquivo
+  # Very old screenshots go to archive
   - condition: "name starts with 'Screenshot' and age > 30"
     action: archive
-    reason: "Screenshot antigo"
+    reason: "Old screenshot"
 
-  # Arquivos muito antigos no Downloads devem ser movidos
+  # Very old files in Downloads should be moved
   - condition: "age > 60"
     action: archive
-    reason: "Arquivo muito antigo no Downloads"
+    reason: "Very old file in Downloads"
 
-# Configurações do Claude Code
+# Claude Code settings
 claude:
-  # Tempo máximo de espera por análise (segundos)
+  # Maximum wait time for analysis (seconds)
   timeout: 30
 
-  # Se falhar a análise, qual ação tomar?
+  # If analysis fails, what action to take?
   fallback_action: keep
 
-  # Nível de confiança mínimo para mover automaticamente
-  # (0.0 a 1.0 - abaixo disso, mantém no Downloads)
+  # Minimum confidence level to move automatically
+  # (0.0 to 1.0 - below this, keep in Downloads)
   min_confidence: 0.7
 
-# Notificações (requer terminal-notifier ou osascript)
+# Notifications (requires terminal-notifier or osascript)
 notifications:
   enabled: true
   on_complete: true
@@ -86,26 +86,26 @@ logging:
   max_size_mb: 10
   rotate_count: 5
 
-# Exclusões - arquivos que nunca serão movidos
+# Exclusions - files that will never be moved
 exclusions:
-  # Nomes de arquivos específicos
+  # Specific file names
   files:
     - ".DS_Store"
     - ".localized"
     - "desktop.ini"
 
-  # Padrões glob
+  # Glob patterns
   patterns:
-    - ".*"  # Arquivos ocultos
+    - ".*"  # Hidden files
     - "*.downloading"
 
-  # Arquivos menores que X bytes (provavelmente são marcadores)
+  # Files smaller than X bytes (probably markers)
   min_size_bytes: 100
 
-# Modo seguro - se true, pede confirmação antes de deletar
+# Safe mode - if true, asks for confirmation before deleting
 safe_mode: true
 
-# Backup antes de mover
+# Backup before moving
 backup:
   enabled: false
   directory: ~/.downloads-organizer/backups

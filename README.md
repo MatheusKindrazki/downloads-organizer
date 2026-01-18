@@ -1,102 +1,102 @@
-# 📁 Downloads Organizer
+# 📁 Smart Downloads Organizer
 
-Sistema automatizado de organização de Downloads usando **Claude Code CLI** para análise inteligente de arquivos.
+Automated Downloads organization system using **Claude Code CLI** for intelligent file analysis.
 
-## 🎯 O que faz?
+## 🎯 What does it do?
 
-Todo domingo às 10h, o script analisa cada arquivo na sua pasta Downloads e usa IA para decidir o melhor destino:
+Every Sunday at 10 AM, the script analyzes each file in your Downloads folder and uses AI to decide the best destination:
 
-| Destino | Descrição |
-|---------|-----------|
-| **iCloud** | Arquivos importantes (backup na nuvem) |
-| **Documentos** | Docs gerais de uso frequente |
-| **Imagens** | Fotos, screenshots, gráficos |
-| **PDFs** | Documentos PDF |
-| **Código** | Scripts, projetos, arquivos de código |
-| **Vídeos** | Arquivos de vídeo |
-| **Áudio** | Músicas e arquivos de áudio |
-| **Instaladores** | .dmg, .pkg, apps |
-| **Arquivo** | Arquivos antigos para arquivamento |
-| **Lixeira** | Arquivos temporários, lixo |
+| Destination | Description |
+|-------------|-------------|
+| **iCloud** | Important files (cloud backup) |
+| **Documents** | General frequently-used docs |
+| **Images** | Photos, screenshots, graphics |
+| **PDFs** | PDF documents |
+| **Code** | Scripts, projects, code files |
+| **Videos** | Video files |
+| **Audio** | Music and audio files |
+| **Installers** | .dmg, .pkg, apps |
+| **Archive** | Old files for archiving |
+| **Trash** | Temporary files, garbage |
 
-## 🚀 Instalação Rápida
+## 🚀 Quick Install
 
 ```bash
-# 1. Certifique-se de ter o Claude Code instalado
+# 1. Make sure you have Claude Code installed
 npm install -g @anthropic-ai/claude-code
 
-# 2. Execute o instalador
+# 2. Run the installer
 cd downloads-organizer
 chmod +x install.sh
 ./install.sh
 ```
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-- macOS (usa LaunchAgent para agendamento)
-- Claude Code CLI instalado e autenticado
-- Node.js (para o Claude Code)
+- macOS (uses LaunchAgent for scheduling)
+- Claude Code CLI installed and authenticated
+- Node.js (for Claude Code)
 
-## 🔧 Uso Manual
+## 🔧 Manual Usage
 
 ```bash
-# Executar agora
+# Run now
 organize-downloads
 
-# Testar sem mover arquivos (dry-run)
+# Test without moving files (dry-run)
 organize-downloads-dry
 
-# Ou diretamente
+# Or directly
 ~/.downloads-organizer/organize-downloads.sh --dry-run --verbose
 ```
 
-## ⚙️ Configuração
+## ⚙️ Configuration
 
-Edite `~/.downloads-organizer/config.yaml` para personalizar:
+Edit `~/.downloads-organizer/config.yaml` to customize:
 
 ```yaml
-# Alterar diretórios de destino
+# Change destination directories
 directories:
-  icloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Organizados
+  icloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Organized
 
-# Adicionar regras automáticas
+# Add automatic rules
 auto_rules:
   trash:
     extensions: [".tmp", ".log"]
 
-# Excluir arquivos específicos
+# Exclude specific files
 exclusions:
   files:
-    - "arquivo-importante.pdf"
+    - "important-file.pdf"
 ```
 
-## 📅 Alterar Horário do Agendamento
+## 📅 Change Schedule Time
 
-Edite `~/Library/LaunchAgents/com.user.downloads-organizer.plist`:
+Edit `~/Library/LaunchAgents/com.user.downloads-organizer.plist`:
 
 ```xml
 <key>StartCalendarInterval</key>
 <dict>
     <key>Weekday</key>
-    <integer>0</integer>  <!-- 0=Dom, 1=Seg, ..., 6=Sáb -->
+    <integer>0</integer>  <!-- 0=Sun, 1=Mon, ..., 6=Sat -->
     <key>Hour</key>
-    <integer>10</integer> <!-- Hora (0-23) -->
+    <integer>10</integer> <!-- Hour (0-23) -->
     <key>Minute</key>
-    <integer>0</integer>  <!-- Minuto (0-59) -->
+    <integer>0</integer>  <!-- Minute (0-59) -->
 </dict>
 ```
 
-Depois recarregue:
+Then reload:
 
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.user.downloads-organizer.plist
 launchctl load ~/Library/LaunchAgents/com.user.downloads-organizer.plist
 ```
 
-### Exemplos de Horários
+### Schedule Examples
 
 ```xml
-<!-- Todo dia às 9:00 -->
+<!-- Every day at 9:00 AM -->
 <key>StartCalendarInterval</key>
 <dict>
     <key>Hour</key>
@@ -105,7 +105,7 @@ launchctl load ~/Library/LaunchAgents/com.user.downloads-organizer.plist
     <integer>0</integer>
 </dict>
 
-<!-- Segunda e Sexta às 18:00 -->
+<!-- Monday and Friday at 6:00 PM -->
 <key>StartCalendarInterval</key>
 <array>
     <dict>
@@ -126,41 +126,41 @@ launchctl load ~/Library/LaunchAgents/com.user.downloads-organizer.plist
 ## 📊 Logs
 
 ```bash
-# Ver logs de execução
+# View execution logs
 tail -f ~/.downloads-organizer/organize.log
 
-# Ver logs do LaunchAgent
+# View LaunchAgent logs
 tail -f ~/.downloads-organizer/launchd.log
 ```
 
-## 🔍 Como a IA Decide?
+## 🔍 How Does the AI Decide?
 
-O Claude Code analisa cada arquivo considerando:
+Claude Code analyzes each file considering:
 
-1. **Nome do arquivo** - Indica o propósito
-2. **Extensão** - Tipo de arquivo
-3. **Tamanho** - Arquivos grandes podem ser mais importantes
-4. **Idade** - Arquivos antigos podem ser arquivados
-5. **Contexto** - Screenshots, instaladores, etc.
+1. **File name** - Indicates purpose
+2. **Extension** - File type
+3. **Size** - Large files may be more important
+4. **Age** - Old files may be archived
+5. **Context** - Screenshots, installers, etc.
 
-Exemplo de análise:
+Example analysis:
 
 ```
-Arquivo: Relatorio-Q4-2025.pdf
-Extensão: pdf
-Tamanho: 2.3MB
-Idade: 5 dias
+File: Q4-2025-Report.pdf
+Extension: pdf
+Size: 2.3MB
+Age: 5 days
 
-DECISÃO: ICLOUD | MOTIVO: Relatório financeiro importante, deve ter backup
+DECISION: ICLOUD | REASON: Important financial report, should have cloud backup
 ```
 
-## 🗑️ Desinstalar
+## 🗑️ Uninstall
 
 ```bash
 ./uninstall.sh
 ```
 
-Ou manualmente:
+Or manually:
 
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.user.downloads-organizer.plist
@@ -168,54 +168,54 @@ rm ~/Library/LaunchAgents/com.user.downloads-organizer.plist
 rm -rf ~/.downloads-organizer
 ```
 
-## 🐛 Solução de Problemas
+## 🐛 Troubleshooting
 
-### "Claude Code CLI não encontrado"
+### "Claude Code CLI not found"
 
 ```bash
 npm install -g @anthropic-ai/claude-code
-# Certifique-se que está autenticado
+# Make sure you're authenticated
 claude auth
 ```
 
-### Script não executa no domingo
+### Script doesn't run on Sunday
 
 ```bash
-# Verificar se está carregado
+# Check if loaded
 launchctl list | grep downloads-organizer
 
-# Forçar execução para teste
+# Force execution for testing
 launchctl start com.user.downloads-organizer
 ```
 
-### Verificar erros
+### Check errors
 
 ```bash
 cat ~/.downloads-organizer/stderr.log
 ```
 
-## 📁 Estrutura de Arquivos
+## 📁 File Structure
 
 ```
 ~/.downloads-organizer/
-├── organize-downloads.sh  # Script principal
-├── config.yaml            # Configurações
-├── organize.log           # Log de execuções
-├── processed.txt          # Arquivos já processados
-├── stdout.log             # Saída padrão
-└── stderr.log             # Erros
+├── organize-downloads.sh  # Main script
+├── config.yaml            # Configuration
+├── organize.log           # Execution log
+├── processed.txt          # Already processed files
+├── stdout.log             # Standard output
+└── stderr.log             # Errors
 
 ~/Library/LaunchAgents/
-└── com.user.downloads-organizer.plist  # Agendamento
+└── com.user.downloads-organizer.plist  # Scheduling
 ```
 
-## 💡 Dicas
+## 💡 Tips
 
-1. **Execute um dry-run primeiro** para ver o que seria movido
-2. **Personalize as regras** no config.yaml para seu fluxo de trabalho
-3. **Verifique os logs** após as primeiras execuções
-4. **Adicione exclusões** para arquivos que devem ficar no Downloads
+1. **Run a dry-run first** to see what would be moved
+2. **Customize rules** in config.yaml for your workflow
+3. **Check logs** after the first executions
+4. **Add exclusions** for files that should stay in Downloads
 
 ---
 
-Criado com ❤️ usando Claude Code
+Created with ❤️ using Claude Code

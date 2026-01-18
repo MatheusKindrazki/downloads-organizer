@@ -1,32 +1,32 @@
 #!/bin/bash
 #
-# Downloads Organizer - Powered by Claude Code
-# Analisa arquivos na pasta Downloads e usa IA para decidir o destino
+# Smart Downloads Organizer - Powered by Claude Code
+# Analyzes files in Downloads folder and uses AI to decide destination
 #
-# Uso: ./organize-downloads.sh [--dry-run] [--verbose]
+# Usage: ./organize-downloads.sh [--dry-run] [--verbose]
 #
 
 set -euo pipefail
 
 # ============================================================================
-# CONFIGURAÇÃO - Ajuste esses caminhos conforme sua necessidade
+# CONFIGURATION - Adjust these paths as needed
 # ============================================================================
 
 DOWNLOADS_DIR="$HOME/Downloads"
 DOCUMENTS_DIR="$HOME/Documents"
 ICLOUD_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
-ARCHIVE_DIR="$HOME/Documents/_Arquivo"
+ARCHIVE_DIR="$HOME/Documents/_Archive"
 TRASH_DIR="$HOME/.Trash"
 
-# Pastas por categoria (dentro de Documents)
-IMAGES_DIR="$DOCUMENTS_DIR/Imagens"
+# Category folders (inside Documents)
+IMAGES_DIR="$DOCUMENTS_DIR/Images"
 PDFS_DIR="$DOCUMENTS_DIR/PDFs"
-CODE_DIR="$DOCUMENTS_DIR/Código"
-VIDEOS_DIR="$DOCUMENTS_DIR/Vídeos"
-AUDIO_DIR="$DOCUMENTS_DIR/Áudio"
-INSTALLERS_DIR="$DOCUMENTS_DIR/Instaladores"
+CODE_DIR="$DOCUMENTS_DIR/Code"
+VIDEOS_DIR="$DOCUMENTS_DIR/Videos"
+AUDIO_DIR="$DOCUMENTS_DIR/Audio"
+INSTALLERS_DIR="$DOCUMENTS_DIR/Installers"
 
-# Configuração do script
+# Script configuration
 LOG_FILE="$HOME/.downloads-organizer/organize.log"
 STATE_FILE="$HOME/.downloads-organizer/processed.txt"
 CONFIG_DIR="$HOME/.downloads-organizer"
@@ -36,7 +36,7 @@ DRY_RUN=false
 VERBOSE=false
 
 # ============================================================================
-# FUNÇÕES AUXILIARES
+# HELPER FUNCTIONS
 # ============================================================================
 
 log() {
@@ -83,62 +83,62 @@ get_file_info() {
     local age_days=$(( ($(date +%s) - $(stat -f %m "$file" 2>/dev/null || stat --format=%Y "$file" 2>/dev/null)) / 86400 ))
 
     cat << EOF
-Arquivo: $filename
-Extensão: $extension
-Tamanho: $size_human
-Última modificação: $modified
-Idade: $age_days dias
+File: $filename
+Extension: $extension
+Size: $size_human
+Last modified: $modified
+Age: $age_days days
 EOF
 }
 
 # ============================================================================
-# ANÁLISE COM CLAUDE CODE
+# CLAUDE CODE ANALYSIS
 # ============================================================================
 
 analyze_with_claude() {
     local file="$1"
     local file_info="$2"
 
-    # Prompt para o Claude Code analisar o arquivo
-    local prompt="Você é um assistente de organização de arquivos. Analise este arquivo e decida o melhor destino.
+    # Prompt for Claude Code to analyze the file
+    local prompt="You are a file organization assistant. Analyze this file and decide the best destination.
 
-ARQUIVO PARA ANÁLISE:
+FILE FOR ANALYSIS:
 $file_info
 
-DESTINOS DISPONÍVEIS:
-1. ICLOUD - Para arquivos importantes que devem ter backup na nuvem (documentos importantes, fotos pessoais, trabalhos)
-2. DOCUMENTS - Para documentos gerais que você usa frequentemente
-3. IMAGES - Para imagens, fotos, screenshots
-4. PDFS - Para documentos PDF
-5. CODE - Para arquivos de código, scripts, projetos
-6. VIDEOS - Para vídeos
-7. AUDIO - Para músicas e áudios
-8. INSTALLERS - Para .dmg, .pkg, instaladores
-9. ARCHIVE - Para arquivos antigos (mais de 30 dias) que podem ser arquivados
-10. TRASH - Para arquivos temporários, downloads duplicados, lixo óbvio (.tmp, .part, etc)
-11. KEEP - Manter no Downloads (se for algo recente e potencialmente em uso)
+AVAILABLE DESTINATIONS:
+1. ICLOUD - For important files that should have cloud backup (important documents, personal photos, work)
+2. DOCUMENTS - For general documents you use frequently
+3. IMAGES - For images, photos, screenshots
+4. PDFS - For PDF documents
+5. CODE - For code files, scripts, projects
+6. VIDEOS - For videos
+7. AUDIO - For music and audio files
+8. INSTALLERS - For .dmg, .pkg, installers
+9. ARCHIVE - For old files (more than 30 days) that can be archived
+10. TRASH - For temporary files, duplicate downloads, obvious garbage (.tmp, .part, etc)
+11. KEEP - Keep in Downloads (if it's recent and potentially in use)
 
-REGRAS:
-- Arquivos .dmg e .pkg antigos (>7 dias) geralmente vão para TRASH ou INSTALLERS
-- Screenshots antigos podem ir para ARCHIVE ou TRASH
-- Documentos de trabalho/estudo importantes vão para ICLOUD
-- Arquivos muito recentes (<3 dias) considere KEEP
-- Arquivos .zip/.tar de projetos vão para CODE
-- Arquivos .part, .crdownload, .tmp sempre vão para TRASH
+RULES:
+- Old .dmg and .pkg files (>7 days) usually go to TRASH or INSTALLERS
+- Old screenshots may go to ARCHIVE or TRASH
+- Important work/study documents go to ICLOUD
+- Very recent files (<3 days) consider KEEP
+- Project .zip/.tar files go to CODE
+- .part, .crdownload, .tmp files always go to TRASH
 
-RESPONDA APENAS com uma linha no formato:
-DECISÃO: [DESTINO] | MOTIVO: [breve explicação]
+RESPOND ONLY with a line in the format:
+DECISION: [DESTINATION] | REASON: [brief explanation]
 
-Exemplo: DECISÃO: PDFS | MOTIVO: Documento PDF de relatório, útil para referência"
+Example: DECISION: PDFS | REASON: PDF report document, useful for reference"
 
-    # Chama o Claude Code CLI
-    local response=$(echo "$prompt" | claude --print 2>/dev/null || echo "DECISÃO: KEEP | MOTIVO: Erro ao analisar, mantendo no Downloads")
+    # Call Claude Code CLI
+    local response=$(echo "$prompt" | claude --print 2>/dev/null || echo "DECISION: KEEP | REASON: Error analyzing, keeping in Downloads")
 
     echo "$response"
 }
 
 # ============================================================================
-# MOVIMENTAÇÃO DE ARQUIVOS
+# FILE MOVEMENT
 # ============================================================================
 
 move_file() {
@@ -179,25 +179,25 @@ move_file() {
             target_dir="$TRASH_DIR"
             ;;
         "KEEP")
-            log "  → Mantendo em Downloads: $filename"
+            log "  → Keeping in Downloads: $filename"
             return 0
             ;;
         *)
-            log "  → Destino desconhecido '$destination', mantendo em Downloads"
+            log "  → Unknown destination '$destination', keeping in Downloads"
             return 0
             ;;
     esac
 
-    # Verifica se o destino existe
+    # Check if destination exists
     if [ ! -d "$target_dir" ]; then
-        log "  → Criando diretório: $target_dir"
+        log "  → Creating directory: $target_dir"
         mkdir -p "$target_dir"
     fi
 
-    # Move o arquivo (ou simula no dry-run)
+    # Move file (or simulate in dry-run)
     local target_path="$target_dir/$filename"
 
-    # Se já existe um arquivo com mesmo nome, adiciona timestamp
+    # If file with same name exists, add timestamp
     if [ -e "$target_path" ]; then
         local timestamp=$(date +%Y%m%d_%H%M%S)
         local name="${filename%.*}"
@@ -210,39 +210,39 @@ move_file() {
     fi
 
     if [ "$DRY_RUN" = true ]; then
-        log "  → [DRY-RUN] Moveria para: $target_path"
+        log "  → [DRY-RUN] Would move to: $target_path"
     else
         mv "$file" "$target_path"
-        log "  → Movido para: $target_path"
+        log "  → Moved to: $target_path"
     fi
 }
 
 # ============================================================================
-# PROCESSAMENTO PRINCIPAL
+# MAIN PROCESSING
 # ============================================================================
 
 process_downloads() {
     log "=========================================="
-    log "Iniciando organização de Downloads"
+    log "Starting Downloads organization"
     log "=========================================="
 
     if [ "$DRY_RUN" = true ]; then
-        log "[MODO DRY-RUN ATIVADO - Nenhum arquivo será movido]"
+        log "[DRY-RUN MODE ACTIVE - No files will be moved]"
     fi
 
-    # Verifica se o Claude Code está instalado
+    # Check if Claude Code is installed
     if ! command -v claude &> /dev/null; then
-        log "ERRO: Claude Code CLI não encontrado!"
-        log "Instale com: npm install -g @anthropic-ai/claude-code"
+        log "ERROR: Claude Code CLI not found!"
+        log "Install with: npm install -g @anthropic-ai/claude-code"
         exit 1
     fi
 
-    # Conta arquivos
+    # Count files
     local file_count=$(find "$DOWNLOADS_DIR" -maxdepth 1 -type f | wc -l | tr -d ' ')
-    log "Encontrados $file_count arquivos em Downloads"
+    log "Found $file_count files in Downloads"
 
     if [ "$file_count" -eq 0 ]; then
-        log "Nenhum arquivo para processar. Finalizando."
+        log "No files to process. Finishing."
         return 0
     fi
 
@@ -250,51 +250,51 @@ process_downloads() {
     local skipped=0
     local errors=0
 
-    # Processa cada arquivo
+    # Process each file
     find "$DOWNLOADS_DIR" -maxdepth 1 -type f | while read -r file; do
         local filename=$(basename "$file")
 
-        # Ignora arquivos ocultos
+        # Ignore hidden files
         if [[ "$filename" == .* ]]; then
-            verbose_log "Ignorando arquivo oculto: $filename"
+            verbose_log "Ignoring hidden file: $filename"
             continue
         fi
 
-        # Ignora arquivos em download (.part, .crdownload, .download)
+        # Ignore files being downloaded (.part, .crdownload, .download)
         if [[ "$filename" == *.part ]] || [[ "$filename" == *.crdownload ]] || [[ "$filename" == *.download ]]; then
-            verbose_log "Ignorando download em andamento: $filename"
+            verbose_log "Ignoring download in progress: $filename"
             continue
         fi
 
-        # Verifica se já foi processado
+        # Check if already processed
         if is_processed "$file"; then
-            verbose_log "Arquivo já processado anteriormente: $filename"
+            verbose_log "File already processed: $filename"
             ((skipped++)) || true
             continue
         fi
 
         log ""
-        log "Analisando: $filename"
+        log "Analyzing: $filename"
 
-        # Obtém informações do arquivo
+        # Get file information
         local file_info=$(get_file_info "$file")
         verbose_log "$file_info"
 
-        # Analisa com Claude Code
-        log "  Consultando IA..."
+        # Analyze with Claude Code
+        log "  Consulting AI..."
         local analysis=$(analyze_with_claude "$file" "$file_info")
 
-        # Extrai decisão e motivo
-        local decision=$(echo "$analysis" | grep -o 'DECISÃO: [A-Z]*' | cut -d' ' -f2 || echo "KEEP")
-        local reason=$(echo "$analysis" | grep -o 'MOTIVO: .*' | cut -d':' -f2- || echo "Sem motivo especificado")
+        # Extract decision and reason
+        local decision=$(echo "$analysis" | grep -o 'DECISION: [A-Z]*' | cut -d' ' -f2 || echo "KEEP")
+        local reason=$(echo "$analysis" | grep -o 'REASON: .*' | cut -d':' -f2- || echo "No reason specified")
 
-        log "  Decisão: $decision"
-        log "  Motivo:$reason"
+        log "  Decision: $decision"
+        log "  Reason:$reason"
 
-        # Move o arquivo
+        # Move file
         move_file "$file" "$decision"
 
-        # Marca como processado
+        # Mark as processed
         if [ "$DRY_RUN" = false ]; then
             mark_processed "$file"
         fi
@@ -304,8 +304,8 @@ process_downloads() {
 
     log ""
     log "=========================================="
-    log "Organização concluída!"
-    log "Processados: $processed | Ignorados: $skipped | Erros: $errors"
+    log "Organization complete!"
+    log "Processed: $processed | Skipped: $skipped | Errors: $errors"
     log "=========================================="
 }
 
@@ -313,7 +313,7 @@ process_downloads() {
 # MAIN
 # ============================================================================
 
-# Processa argumentos
+# Process arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
         --dry-run)
@@ -325,30 +325,30 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help|-h)
-            echo "Downloads Organizer - Powered by Claude Code"
+            echo "Smart Downloads Organizer - Powered by Claude Code"
             echo ""
-            echo "Uso: $0 [opções]"
+            echo "Usage: $0 [options]"
             echo ""
-            echo "Opções:"
-            echo "  --dry-run    Simula a execução sem mover arquivos"
-            echo "  --verbose    Mostra informações detalhadas"
-            echo "  --help       Mostra esta ajuda"
+            echo "Options:"
+            echo "  --dry-run    Simulate execution without moving files"
+            echo "  --verbose    Show detailed information"
+            echo "  --help       Show this help"
             echo ""
-            echo "Configuração:"
-            echo "  Edite as variáveis no início do script para ajustar os caminhos."
-            echo "  Logs são salvos em: $LOG_FILE"
+            echo "Configuration:"
+            echo "  Edit variables at the top of the script to adjust paths."
+            echo "  Logs are saved in: $LOG_FILE"
             exit 0
             ;;
         *)
-            echo "Opção desconhecida: $1"
-            echo "Use --help para ver as opções disponíveis"
+            echo "Unknown option: $1"
+            echo "Use --help to see available options"
             exit 1
             ;;
     esac
 done
 
-# Garante que os diretórios existem
+# Ensure directories exist
 ensure_dirs
 
-# Executa o processamento
+# Execute processing
 process_downloads

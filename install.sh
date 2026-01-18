@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Downloads Organizer - Script de Instalação
-# Configura o agendamento automático no macOS
+# Smart Downloads Organizer - Installation Script
+# Sets up automatic scheduling on macOS
 #
 
 set -e
@@ -11,89 +11,89 @@ CONFIG_DIR="$HOME/.downloads-organizer"
 LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
 
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║       Downloads Organizer - Instalação                       ║"
+echo "║       Smart Downloads Organizer - Installation               ║"
 echo "║       Powered by Claude Code                                 ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 
-# Verifica se é macOS
+# Check if it's macOS
 if [[ "$(uname)" != "Darwin" ]]; then
-    echo "❌ Este script é apenas para macOS."
-    echo "   Para Linux, use cron manualmente."
+    echo "❌ This script is for macOS only."
+    echo "   For Linux, use cron manually."
     exit 1
 fi
 
-# Verifica se Claude Code está instalado
-echo "🔍 Verificando dependências..."
+# Check if Claude Code is installed
+echo "🔍 Checking dependencies..."
 
 if ! command -v claude &> /dev/null; then
     echo ""
-    echo "⚠️  Claude Code CLI não encontrado!"
+    echo "⚠️  Claude Code CLI not found!"
     echo ""
-    echo "Instale o Claude Code primeiro:"
+    echo "Install Claude Code first:"
     echo "  npm install -g @anthropic-ai/claude-code"
     echo ""
-    echo "Após instalar, execute este script novamente."
+    echo "After installing, run this script again."
     exit 1
 fi
 
-echo "✅ Claude Code CLI encontrado: $(which claude)"
+echo "✅ Claude Code CLI found: $(which claude)"
 
-# Cria diretório de configuração
+# Create configuration directory
 echo ""
-echo "📁 Criando diretório de configuração..."
+echo "📁 Creating configuration directory..."
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$LAUNCH_AGENTS_DIR"
 
-# Copia o script principal
-echo "📋 Copiando scripts..."
+# Copy main script
+echo "📋 Copying scripts..."
 cp "$SCRIPT_DIR/organize-downloads.sh" "$CONFIG_DIR/"
 chmod +x "$CONFIG_DIR/organize-downloads.sh"
 
-# Copia configuração se não existir
+# Copy configuration if it doesn't exist
 if [ ! -f "$CONFIG_DIR/config.yaml" ]; then
     cp "$SCRIPT_DIR/config.yaml" "$CONFIG_DIR/"
-    echo "✅ Arquivo de configuração criado em: $CONFIG_DIR/config.yaml"
+    echo "✅ Configuration file created at: $CONFIG_DIR/config.yaml"
 else
-    echo "ℹ️  Arquivo de configuração já existe, mantendo o atual"
+    echo "ℹ️  Configuration file already exists, keeping current"
 fi
 
-# Processa o plist substituindo $HOME
+# Process plist replacing $HOME
 echo ""
-echo "⏰ Configurando agendamento para todo Domingo às 10:00..."
+echo "⏰ Setting up schedule for every Sunday at 10:00 AM..."
 
 PLIST_FILE="$LAUNCH_AGENTS_DIR/com.user.downloads-organizer.plist"
 
-# Substitui $HOME pelo caminho real
+# Replace $HOME with real path
 sed "s|\$HOME|$HOME|g" "$SCRIPT_DIR/com.user.downloads-organizer.plist" > "$PLIST_FILE"
 
-# Descarrega se já estiver carregado
+# Unload if already loaded
 launchctl unload "$PLIST_FILE" 2>/dev/null || true
 
-# Carrega o novo LaunchAgent
+# Load new LaunchAgent
 launchctl load "$PLIST_FILE"
 
-echo "✅ LaunchAgent instalado e carregado"
+echo "✅ LaunchAgent installed and loaded"
 
-# Cria diretórios de destino
+# Create destination directories
 echo ""
-echo "📂 Criando diretórios de destino..."
+echo "📂 Creating destination directories..."
 
-mkdir -p "$HOME/Documents/Imagens"
+mkdir -p "$HOME/Documents/Images"
 mkdir -p "$HOME/Documents/PDFs"
-mkdir -p "$HOME/Documents/Código"
-mkdir -p "$HOME/Documents/Vídeos"
-mkdir -p "$HOME/Documents/Áudio"
-mkdir -p "$HOME/Documents/Instaladores"
-mkdir -p "$HOME/Documents/_Arquivo"
+mkdir -p "$HOME/Documents/Code"
+mkdir -p "$HOME/Documents/Videos"
+mkdir -p "$HOME/Documents/Audio"
+mkdir -p "$HOME/Documents/Installers"
+mkdir -p "$HOME/Documents/_Archive"
 
-echo "✅ Diretórios criados"
+echo "✅ Directories created"
 
-# Cria alias para fácil acesso
+# Create aliases for easy access
 echo ""
-echo "🔗 Criando atalhos..."
+echo "🔗 Creating shortcuts..."
 
-# Detecta qual shell está sendo usado
+# Detect which shell is being used
 SHELL_RC=""
 if [ -f "$HOME/.zshrc" ]; then
     SHELL_RC="$HOME/.zshrc"
@@ -104,58 +104,58 @@ elif [ -f "$HOME/.bash_profile" ]; then
 fi
 
 if [ -n "$SHELL_RC" ]; then
-    # Verifica se o alias já existe
+    # Check if alias already exists
     if ! grep -q "alias organize-downloads" "$SHELL_RC" 2>/dev/null; then
         echo "" >> "$SHELL_RC"
-        echo "# Downloads Organizer" >> "$SHELL_RC"
+        echo "# Smart Downloads Organizer" >> "$SHELL_RC"
         echo "alias organize-downloads='$CONFIG_DIR/organize-downloads.sh'" >> "$SHELL_RC"
         echo "alias organize-downloads-dry='$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$SHELL_RC"
-        echo "✅ Aliases adicionados ao $SHELL_RC"
-        echo "   Execute 'source $SHELL_RC' ou abra um novo terminal para usar"
+        echo "✅ Aliases added to $SHELL_RC"
+        echo "   Run 'source $SHELL_RC' or open a new terminal to use"
     else
-        echo "ℹ️  Aliases já existem"
+        echo "ℹ️  Aliases already exist"
     fi
 fi
 
-# Resumo
+# Summary
 echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                    ✅ Instalação Concluída!                  ║"
+echo "║                    ✅ Installation Complete!                 ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
-echo "📍 Localização dos arquivos:"
-echo "   Script:    $CONFIG_DIR/organize-downloads.sh"
-echo "   Config:    $CONFIG_DIR/config.yaml"
-echo "   Logs:      $CONFIG_DIR/organize.log"
+echo "📍 File locations:"
+echo "   Script:      $CONFIG_DIR/organize-downloads.sh"
+echo "   Config:      $CONFIG_DIR/config.yaml"
+echo "   Logs:        $CONFIG_DIR/organize.log"
 echo "   LaunchAgent: $PLIST_FILE"
 echo ""
-echo "📅 Agendamento:"
-echo "   O script será executado automaticamente todo DOMINGO às 10:00"
+echo "📅 Schedule:"
+echo "   The script will run automatically every SUNDAY at 10:00 AM"
 echo ""
-echo "🚀 Comandos úteis:"
-echo "   organize-downloads          # Executar agora"
-echo "   organize-downloads-dry      # Testar sem mover arquivos"
+echo "🚀 Useful commands:"
+echo "   organize-downloads          # Run now"
+echo "   organize-downloads-dry      # Test without moving files"
 echo ""
-echo "🔧 Para modificar o horário:"
-echo "   1. Edite: $PLIST_FILE"
-echo "   2. Mude Weekday (0=Dom, 1=Seg...) e Hour (0-23)"
-echo "   3. Execute: launchctl unload $PLIST_FILE"
-echo "   4. Execute: launchctl load $PLIST_FILE"
+echo "🔧 To modify the schedule:"
+echo "   1. Edit: $PLIST_FILE"
+echo "   2. Change Weekday (0=Sun, 1=Mon...) and Hour (0-23)"
+echo "   3. Run: launchctl unload $PLIST_FILE"
+echo "   4. Run: launchctl load $PLIST_FILE"
 echo ""
-echo "❓ Para desinstalar:"
+echo "❓ To uninstall:"
 echo "   launchctl unload $PLIST_FILE"
 echo "   rm -rf $CONFIG_DIR"
 echo "   rm $PLIST_FILE"
 echo ""
 
-# Pergunta se quer executar um teste
+# Ask if want to run a test
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-read -p "🧪 Deseja executar um teste agora (dry-run)? [s/N] " -n 1 -r
+read -p "🧪 Do you want to run a test now (dry-run)? [y/N] " -n 1 -r
 echo ""
 
-if [[ $REPLY =~ ^[Ss]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo ""
-    echo "Executando teste..."
+    echo "Running test..."
     echo ""
     "$CONFIG_DIR/organize-downloads.sh" --dry-run --verbose
 fi
