@@ -47,12 +47,14 @@ mkdir -p "$LAUNCH_AGENTS_DIR"
 
 # Copy scripts
 echo "📋 Copying scripts..."
+cp "$SCRIPT_DIR/organize-downloads-ultra.sh" "$CONFIG_DIR/"
 cp "$SCRIPT_DIR/organize-downloads.sh" "$CONFIG_DIR/"
 cp "$SCRIPT_DIR/organize-downloads-fast.sh" "$CONFIG_DIR/" 2>/dev/null || true
-cp "$SCRIPT_DIR/organize-downloads-ultra.sh" "$CONFIG_DIR/" 2>/dev/null || true
+chmod +x "$CONFIG_DIR/organize-downloads-ultra.sh"
 chmod +x "$CONFIG_DIR/organize-downloads.sh"
 chmod +x "$CONFIG_DIR/organize-downloads-fast.sh" 2>/dev/null || true
-chmod +x "$CONFIG_DIR/organize-downloads-ultra.sh" 2>/dev/null || true
+
+echo "✅ Ultra-fast version installed as default"
 
 # Copy configuration if it doesn't exist
 if [ ! -f "$CONFIG_DIR/config.yaml" ]; then
@@ -112,10 +114,10 @@ if [ -n "$SHELL_RC" ]; then
     if ! grep -q "alias organize-downloads" "$SHELL_RC" 2>/dev/null; then
         echo "" >> "$SHELL_RC"
         echo "# Smart Downloads Organizer" >> "$SHELL_RC"
-        echo "alias organize-downloads='$CONFIG_DIR/organize-downloads.sh'" >> "$SHELL_RC"
-        echo "alias organize-downloads-dry='$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$SHELL_RC"
-        echo "alias organize-downloads-ultra='$CONFIG_DIR/organize-downloads-ultra.sh'" >> "$SHELL_RC"
-        echo "alias organize-downloads-ultra-dry='$CONFIG_DIR/organize-downloads-ultra.sh --dry-run --verbose'" >> "$SHELL_RC"
+        echo "alias organize-downloads='$CONFIG_DIR/organize-downloads-ultra.sh'" >> "$SHELL_RC"
+        echo "alias organize-downloads-dry='$CONFIG_DIR/organize-downloads-ultra.sh --dry-run --verbose'" >> "$SHELL_RC"
+        echo "alias organize-downloads-standard='$CONFIG_DIR/organize-downloads.sh'" >> "$SHELL_RC"
+        echo "alias organize-downloads-standard-dry='$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$SHELL_RC"
         echo "✅ Aliases added to $SHELL_RC"
         echo "   Run 'source $SHELL_RC' or open a new terminal to use"
     else
@@ -137,12 +139,13 @@ echo "   LaunchAgent: $PLIST_FILE"
 echo ""
 echo "📅 Schedule:"
 echo "   The script will run automatically every SUNDAY at 10:00 AM"
+echo "   Using ULTRA-FAST version (10-50x faster!)"
 echo ""
 echo "🚀 Useful commands:"
-echo "   organize-downloads              # Run standard version"
+echo "   organize-downloads              # Run ultra-fast version (DEFAULT)"
 echo "   organize-downloads-dry          # Test without moving files"
-echo "   organize-downloads-ultra        # Run ultra-fast version (recommended!)"
-echo "   organize-downloads-ultra-dry    # Test ultra version"
+echo "   organize-downloads-standard     # Run standard version (slower)"
+echo "   organize-downloads-standard-dry # Test standard version"
 echo ""
 echo "🔧 To modify the schedule:"
 echo "   1. Edit: $PLIST_FILE"

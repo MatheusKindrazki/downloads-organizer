@@ -9,7 +9,7 @@ Automated Downloads organization system that uses Claude Code CLI for intelligen
 **Three versions available:**
 - `organize-downloads.sh` - Standard sequential processing (1 file per API call)
 - `organize-downloads-fast.sh` - Batch processing (50 files per API call)
-- `organize-downloads-ultra.sh` - **Recommended:** Ultra-fast single-shot (all files in 1 call, 10-50x faster)
+- `organize-downloads-ultra.sh` - **DEFAULT:** Ultra-fast single-shot (all files in 1 call, 10-50x faster)
 
 ## Architecture
 
@@ -45,13 +45,13 @@ The AI responds in a structured format that is parsed via grep.
 
 ### Manual Execution
 ```bash
-# Ultra-fast version (RECOMMENDED)
-organize-downloads-ultra
-organize-downloads-ultra-dry  # dry-run
-
-# Standard version
+# Ultra-fast version (DEFAULT)
 organize-downloads
-organize-downloads-dry
+organize-downloads-dry  # dry-run
+
+# Standard version (slower)
+organize-downloads-standard
+organize-downloads-standard-dry
 
 # Direct execution
 ~/.downloads-organizer/organize-downloads-ultra.sh --dry-run --verbose

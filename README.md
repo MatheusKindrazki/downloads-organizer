@@ -39,27 +39,17 @@ chmod +x install.sh
 
 ## 🔧 Manual Usage
 
-### Standard Version (Sequential Processing)
+**The ultra-fast version is the DEFAULT** - 10-50x faster than the standard version!
+
 ```bash
-# Run now
+# Run now (uses ultra-fast version)
 organize-downloads
 
 # Test without moving files (dry-run)
 organize-downloads-dry
 
-# Or directly
-~/.downloads-organizer/organize-downloads.sh --dry-run --verbose
-```
-
-### 🚀 Ultra-Fast Version (Recommended)
-**10-50x faster!** Analyzes all files in a single Claude API call.
-
-```bash
-# Run ultra-fast version
-./organize-downloads-ultra.sh
-
-# Dry-run test
-./organize-downloads-ultra.sh --dry-run --verbose
+# Use standard version if needed (slower)
+organize-downloads-standard
 
 # Requirements: jq (install with: brew install jq)
 ```

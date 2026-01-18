@@ -11,7 +11,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>$HOME/.downloads-organizer/organize-downloads.sh --verbose 2>&1 | tee -a $HOME/.downloads-organizer/launchd.log</string>
+        <string>$HOME/.downloads-organizer/organize-downloads-ultra.sh --verbose 2>&1 | tee -a $HOME/.downloads-organizer/launchd.log</string>
     </array>
 
     <!-- Schedule for every Sunday at 10:00 AM -->
