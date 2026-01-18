@@ -111,8 +111,9 @@ EOF
 
     files_json+="]"
 
+    # Return JSON and count separated by newline
     echo "$files_json"
-    return $count
+    echo "$count"
 }
 
 analyze_all_with_claude() {
@@ -259,8 +260,9 @@ process_downloads() {
 
     # Collect files
     log "📂 Scanning Downloads folder..."
-    local files_json=$(collect_files_info)
-    local file_count=$?
+    local result=$(collect_files_info)
+    local files_json=$(echo "$result" | head -1)
+    local file_count=$(echo "$result" | tail -1)
 
     if [ "$file_count" -eq 0 ]; then
         log "✨ No files to process"
