@@ -45,10 +45,14 @@ echo "📁 Creating configuration directory..."
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$LAUNCH_AGENTS_DIR"
 
-# Copy main script
+# Copy scripts
 echo "📋 Copying scripts..."
 cp "$SCRIPT_DIR/organize-downloads.sh" "$CONFIG_DIR/"
+cp "$SCRIPT_DIR/organize-downloads-fast.sh" "$CONFIG_DIR/" 2>/dev/null || true
+cp "$SCRIPT_DIR/organize-downloads-ultra.sh" "$CONFIG_DIR/" 2>/dev/null || true
 chmod +x "$CONFIG_DIR/organize-downloads.sh"
+chmod +x "$CONFIG_DIR/organize-downloads-fast.sh" 2>/dev/null || true
+chmod +x "$CONFIG_DIR/organize-downloads-ultra.sh" 2>/dev/null || true
 
 # Copy configuration if it doesn't exist
 if [ ! -f "$CONFIG_DIR/config.yaml" ]; then
@@ -110,6 +114,8 @@ if [ -n "$SHELL_RC" ]; then
         echo "# Smart Downloads Organizer" >> "$SHELL_RC"
         echo "alias organize-downloads='$CONFIG_DIR/organize-downloads.sh'" >> "$SHELL_RC"
         echo "alias organize-downloads-dry='$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$SHELL_RC"
+        echo "alias organize-downloads-ultra='$CONFIG_DIR/organize-downloads-ultra.sh'" >> "$SHELL_RC"
+        echo "alias organize-downloads-ultra-dry='$CONFIG_DIR/organize-downloads-ultra.sh --dry-run --verbose'" >> "$SHELL_RC"
         echo "✅ Aliases added to $SHELL_RC"
         echo "   Run 'source $SHELL_RC' or open a new terminal to use"
     else
@@ -133,8 +139,10 @@ echo "📅 Schedule:"
 echo "   The script will run automatically every SUNDAY at 10:00 AM"
 echo ""
 echo "🚀 Useful commands:"
-echo "   organize-downloads          # Run now"
-echo "   organize-downloads-dry      # Test without moving files"
+echo "   organize-downloads              # Run standard version"
+echo "   organize-downloads-dry          # Test without moving files"
+echo "   organize-downloads-ultra        # Run ultra-fast version (recommended!)"
+echo "   organize-downloads-ultra-dry    # Test ultra version"
 echo ""
 echo "🔧 To modify the schedule:"
 echo "   1. Edit: $PLIST_FILE"

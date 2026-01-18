@@ -6,6 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Automated Downloads organization system that uses Claude Code CLI for intelligent file analysis. Runs automatically via LaunchAgent on macOS (Sundays at 10 AM) or can be executed manually.
 
+**Three versions available:**
+- `organize-downloads.sh` - Standard sequential processing (1 file per API call)
+- `organize-downloads-fast.sh` - Batch processing (50 files per API call)
+- `organize-downloads-ultra.sh` - **Recommended:** Ultra-fast single-shot (all files in 1 call, 10-50x faster)
+
 ## Architecture
 
 This is a **shell script** project (not Node.js/TypeScript), consisting of:
@@ -40,14 +45,16 @@ The AI responds in a structured format that is parsed via grep.
 
 ### Manual Execution
 ```bash
-# Run now (after installation)
-organize-downloads
+# Ultra-fast version (RECOMMENDED)
+organize-downloads-ultra
+organize-downloads-ultra-dry  # dry-run
 
-# Dry-run mode (test without moving)
+# Standard version
+organize-downloads
 organize-downloads-dry
 
-# Or directly
-~/.downloads-organizer/organize-downloads.sh --dry-run --verbose
+# Direct execution
+~/.downloads-organizer/organize-downloads-ultra.sh --dry-run --verbose
 ```
 
 ### Installation/Uninstallation
