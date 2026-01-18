@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Identificador único do LaunchAgent -->
+    <key>Label</key>
+    <string>com.user.downloads-organizer</string>
+
+    <!-- Comando a ser executado -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>$HOME/.downloads-organizer/organize-downloads.sh --verbose 2>&1 | tee -a $HOME/.downloads-organizer/launchd.log</string>
+    </array>
+
+    <!-- Agendar para todo Domingo às 10:00 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <!-- 0 = Domingo, 1 = Segunda, ..., 6 = Sábado -->
+        <key>Weekday</key>
+        <integer>0</integer>
+        <!-- Hora (0-23) -->
+        <key>Hour</key>
+        <integer>10</integer>
+        <!-- Minuto (0-59) -->
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Variáveis de ambiente -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.npm-global/bin</string>
+        <key>HOME</key>
+        <string>$HOME</string>
+    </dict>
+
+    <!-- Diretório de trabalho -->
+    <key>WorkingDirectory</key>
+    <string>$HOME/.downloads-organizer</string>
+
+    <!-- Logs de saída e erro -->
+    <key>StandardOutPath</key>
+    <string>$HOME/.downloads-organizer/stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>$HOME/.downloads-organizer/stderr.log</string>
+
+    <!-- Executar ao carregar (para teste inicial) -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Continuar tentando se falhar -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Timeout em segundos (15 minutos) -->
+    <key>TimeOut</key>
+    <integer>900</integer>
+
+    <!-- Prioridade baixa para não atrapalhar -->
+    <key>Nice</key>
+    <integer>10</integer>
+
+    <!-- Esperar rede estar disponível (para Claude API) -->
+    <key>WatchPaths</key>
+    <array/>
+
+</dict>
+</plist>

@@ -1,0 +1,112 @@
+# Downloads Organizer - Configuração
+# Edite este arquivo para personalizar o comportamento
+
+# Diretórios de destino
+directories:
+  downloads: ~/Downloads
+  documents: ~/Documents
+  icloud: ~/Library/Mobile Documents/com~apple~CloudDocs
+  archive: ~/Documents/_Arquivo
+
+  # Categorias (subpastas de Documents)
+  images: ~/Documents/Imagens
+  pdfs: ~/Documents/PDFs
+  code: ~/Documents/Código
+  videos: ~/Documents/Vídeos
+  audio: ~/Documents/Áudio
+  installers: ~/Documents/Instaladores
+
+# Regras automáticas (aplicadas ANTES da análise com IA)
+# Estas regras aceleram o processamento para casos óbvios
+auto_rules:
+  # Arquivos que sempre vão para o lixo
+  trash:
+    extensions: [".tmp", ".part", ".crdownload", ".download", ".incomplete"]
+    patterns: ["*.tmp.*", "~*", "._*"]
+
+  # Arquivos que sempre vão para categorias específicas
+  images:
+    extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".svg", ".ico"]
+
+  pdfs:
+    extensions: [".pdf"]
+
+  code:
+    extensions: [".py", ".js", ".ts", ".go", ".rs", ".java", ".cpp", ".c", ".h", ".sh", ".bash", ".zsh"]
+    patterns: ["*.tar.gz", "*.zip"] # Apenas se contiver "project", "code", "src" no nome
+
+  videos:
+    extensions: [".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"]
+
+  audio:
+    extensions: [".mp3", ".m4a", ".wav", ".flac", ".aac", ".ogg"]
+
+  installers:
+    extensions: [".dmg", ".pkg", ".app", ".exe", ".msi"]
+
+# Regras baseadas em idade do arquivo (em dias)
+age_rules:
+  # Instaladores antigos vão para o lixo
+  - condition: "extension in ['.dmg', '.pkg'] and age > 14"
+    action: trash
+    reason: "Instalador antigo, provavelmente já foi usado"
+
+  # Screenshots muito antigos vão para arquivo
+  - condition: "name starts with 'Screenshot' and age > 30"
+    action: archive
+    reason: "Screenshot antigo"
+
+  # Arquivos muito antigos no Downloads devem ser movidos
+  - condition: "age > 60"
+    action: archive
+    reason: "Arquivo muito antigo no Downloads"
+
+# Configurações do Claude Code
+claude:
+  # Tempo máximo de espera por análise (segundos)
+  timeout: 30
+
+  # Se falhar a análise, qual ação tomar?
+  fallback_action: keep
+
+  # Nível de confiança mínimo para mover automaticamente
+  # (0.0 a 1.0 - abaixo disso, mantém no Downloads)
+  min_confidence: 0.7
+
+# Notificações (requer terminal-notifier ou osascript)
+notifications:
+  enabled: true
+  on_complete: true
+  on_error: true
+
+# Logging
+logging:
+  file: ~/.downloads-organizer/organize.log
+  level: info  # debug, info, warn, error
+  max_size_mb: 10
+  rotate_count: 5
+
+# Exclusões - arquivos que nunca serão movidos
+exclusions:
+  # Nomes de arquivos específicos
+  files:
+    - ".DS_Store"
+    - ".localized"
+    - "desktop.ini"
+
+  # Padrões glob
+  patterns:
+    - ".*"  # Arquivos ocultos
+    - "*.downloading"
+
+  # Arquivos menores que X bytes (provavelmente são marcadores)
+  min_size_bytes: 100
+
+# Modo seguro - se true, pede confirmação antes de deletar
+safe_mode: true
+
+# Backup antes de mover
+backup:
+  enabled: false
+  directory: ~/.downloads-organizer/backups
+  retention_days: 7
