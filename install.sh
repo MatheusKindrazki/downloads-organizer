@@ -99,30 +99,79 @@ echo "✅ Directories created"
 echo ""
 echo "🔗 Creating shortcuts..."
 
-# Detect which shell is being used
-SHELL_RC=""
+ALIASES_ADDED=false
+
+# Function to add/update aliases
+add_aliases() {
+    local rc_file="$1"
+    local is_fish="$2"
+
+    # Remove old aliases if they exist
+    if [ "$is_fish" = "true" ]; then
+        sed -i '' '/# Smart Downloads Organizer/d' "$rc_file" 2>/dev/null || true
+        sed -i '' '/alias organize-downloads/d' "$rc_file" 2>/dev/null || true
+    else
+        sed -i '' '/# Smart Downloads Organizer/d' "$rc_file" 2>/dev/null || true
+        sed -i '' '/alias organize-downloads/d' "$rc_file" 2>/dev/null || true
+    fi
+
+    # Add new aliases
+    echo "" >> "$rc_file"
+    echo "# Smart Downloads Organizer" >> "$rc_file"
+
+    if [ "$is_fish" = "true" ]; then
+        # Fish shell syntax (no equals sign)
+        echo "alias organize-downloads '$CONFIG_DIR/organize-downloads-ultra.sh'" >> "$rc_file"
+        echo "alias organize-downloads-dry '$CONFIG_DIR/organize-downloads-ultra.sh --dry-run --verbose'" >> "$rc_file"
+        echo "alias organize-downloads-standard '$CONFIG_DIR/organize-downloads.sh'" >> "$rc_file"
+        echo "alias organize-downloads-standard-dry '$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$rc_file"
+    else
+        # Bash/Zsh syntax (with equals sign)
+        echo "alias organize-downloads='$CONFIG_DIR/organize-downloads-ultra.sh'" >> "$rc_file"
+        echo "alias organize-downloads-dry='$CONFIG_DIR/organize-downloads-ultra.sh --dry-run --verbose'" >> "$rc_file"
+        echo "alias organize-downloads-standard='$CONFIG_DIR/organize-downloads.sh'" >> "$rc_file"
+        echo "alias organize-downloads-standard-dry='$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$rc_file"
+    fi
+}
+
+# Zsh
 if [ -f "$HOME/.zshrc" ]; then
-    SHELL_RC="$HOME/.zshrc"
-elif [ -f "$HOME/.bashrc" ]; then
-    SHELL_RC="$HOME/.bashrc"
-elif [ -f "$HOME/.bash_profile" ]; then
-    SHELL_RC="$HOME/.bash_profile"
+    add_aliases "$HOME/.zshrc" "false"
+    echo "✅ Aliases added to ~/.zshrc"
+    ALIASES_ADDED=true
 fi
 
-if [ -n "$SHELL_RC" ]; then
-    # Check if alias already exists
-    if ! grep -q "alias organize-downloads" "$SHELL_RC" 2>/dev/null; then
-        echo "" >> "$SHELL_RC"
-        echo "# Smart Downloads Organizer" >> "$SHELL_RC"
-        echo "alias organize-downloads='$CONFIG_DIR/organize-downloads-ultra.sh'" >> "$SHELL_RC"
-        echo "alias organize-downloads-dry='$CONFIG_DIR/organize-downloads-ultra.sh --dry-run --verbose'" >> "$SHELL_RC"
-        echo "alias organize-downloads-standard='$CONFIG_DIR/organize-downloads.sh'" >> "$SHELL_RC"
-        echo "alias organize-downloads-standard-dry='$CONFIG_DIR/organize-downloads.sh --dry-run --verbose'" >> "$SHELL_RC"
-        echo "✅ Aliases added to $SHELL_RC"
-        echo "   Run 'source $SHELL_RC' or open a new terminal to use"
-    else
-        echo "ℹ️  Aliases already exist"
-    fi
+# Bash
+if [ -f "$HOME/.bashrc" ]; then
+    add_aliases "$HOME/.bashrc" "false"
+    echo "✅ Aliases added to ~/.bashrc"
+    ALIASES_ADDED=true
+fi
+
+if [ -f "$HOME/.bash_profile" ]; then
+    add_aliases "$HOME/.bash_profile" "false"
+    echo "✅ Aliases added to ~/.bash_profile"
+    ALIASES_ADDED=true
+fi
+
+# Fish
+if [ -f "$HOME/.config/fish/config.fish" ]; then
+    add_aliases "$HOME/.config/fish/config.fish" "true"
+    echo "✅ Aliases added to ~/.config/fish/config.fish"
+    ALIASES_ADDED=true
+elif command -v fish &>/dev/null; then
+    # Fish is installed but config doesn't exist, create it
+    mkdir -p "$HOME/.config/fish"
+    touch "$HOME/.config/fish/config.fish"
+    add_aliases "$HOME/.config/fish/config.fish" "true"
+    echo "✅ Aliases added to ~/.config/fish/config.fish"
+    ALIASES_ADDED=true
+fi
+
+if [ "$ALIASES_ADDED" = true ]; then
+    echo "   Restart your terminal or run 'source <rc-file>' to use the commands"
+else
+    echo "⚠️  No shell RC file found. Add aliases manually if needed."
 fi
 
 # Summary
